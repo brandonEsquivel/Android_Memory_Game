@@ -1,5 +1,6 @@
 package com.example.memorygame;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -17,13 +19,17 @@ public class MainActivity extends AppCompatActivity {
     long delay1s = 500;
     int colorCode,counter;
     int Points = 0;
-    String sequence = "";
+
+    String sequence = "1";
     String Selected = "";
+
     boolean gameover = false;
 
+    /* To control Events Delays*/
+    final Handler handler = new Handler();
 
     /* Define buttons */
-    Button start,btn1,btn2,btn3,btn4,btn5,btn6,txt;
+    Button start,btn1,btn2,btn3,btn4,btn5,btn6,txt,pts;
 
     /* Define de mediaPlayer instance */
     MediaPlayer mp;
@@ -42,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
         btn5 = findViewById(R.id.button5);
         btn6 = findViewById(R.id.button6);
         txt = findViewById(R.id.buttonseq);
-        counter = 0;
+        pts = findViewById(R.id.puntaje);
+        counter = sequence.length();
 
 
         // onclick methods
@@ -51,15 +58,14 @@ public class MainActivity extends AppCompatActivity {
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               //disable the buttons
-               disableButtons();
 
-               sequence();
-               PlayActualSequence();
-               txt.setText(Selected);
-               enableButtons();
-
-
+                disableButtons();
+                sequence();
+                txt.setText("Seq: " + Selected);
+                pts.setText(" PTS: "+Points);
+                Toast toast = Toast.makeText(getApplicationContext(), "Iniciando Nuevo Juego!!", Toast.LENGTH_LONG);
+                toast.show();
+                Ingame();
 
             }
         });
@@ -70,19 +76,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 animations(btn1);
                 Selected = "" + Selected + '1';   // concat the sequence values
-                txt.setText(Selected);
+                gameover = !check_seq();
+                txt.setText("Seq: " + Selected);
             }
 
         });
-
-
         // Buttons ONCLICK
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 animations(btn2);
                 Selected = "" + Selected + '2';   // concat the sequence values
-                txt.setText(Selected);
+                gameover = !check_seq();
+                txt.setText("Seq: " + Selected);
             }
 
         });
@@ -92,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 animations(btn3);
                 Selected = "" + Selected + '3';   // concat the sequence values
-                txt.setText(Selected);
+                gameover = !check_seq();
+                txt.setText("Seq: " + Selected);
             }
 
         });
@@ -102,7 +109,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 animations(btn4);
                 Selected = "" + Selected + '4';   // concat the sequence values
-                txt.setText(Selected);
+                gameover = !check_seq();
+                txt.setText("Seq: " + Selected);
+
             }
 
         });
@@ -112,7 +121,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 animations(btn5);
                 Selected = "" + Selected + '5';   // concat the sequence values
-                txt.setText(Selected);
+                gameover = !check_seq();
+                txt.setText("Seq: " + Selected);
             }
 
         });
@@ -122,19 +132,30 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 animations(btn6);
                 Selected = "" + Selected + '6';   // concat the sequence values
-                txt.setText(Selected);
+                gameover = !check_seq();
+                txt.setText("Seq: " + Selected);
             }
 
         });
-
     }
 
 
+    /*Checks if the selected sequence is correct*/
+    public boolean check_seq(){
+        for (int h = 0; h<Selected.length();h++){
+            if (sequence.charAt(h)!=Selected.charAt(h)){
+                return false;
+            }
+            else{
+                if (h==counter){
+                    sequenceOK();
+                }
+            }
 
+        }
 
-
-
-
+        return true;
+    }
 
 
 
@@ -210,109 +231,99 @@ public class MainActivity extends AppCompatActivity {
         btn6.setEnabled(true);
         btn6.setTextColor(Color.parseColor("#FF000000"));
     }
-    public void PlayActualSequence(){
 
-        for(int i = 0; i <= sequence.length(); i++)
+    public void PlayActualSequence(){
+        for(int i = 0; i < sequence.length(); i++)
         {
             int selector = (int)sequence.charAt(i);
-
             switch(selector)
             {
                 case 1:
-                    animations(btn1);
-                    break;
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            animations(btn1);
+                        }
+                    }, 4*delay1s);
+
+                        break;
                 case 2:
-                    animations(btn2);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            animations(btn2);
+                        }
+                    }, 4*delay1s);
+
                     break;
                 case 3:
-                    animations(btn3);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            animations(btn3);
+                        }
+                    }, 4*delay1s);
+
                     break;
                 case 4:
-                    animations(btn4);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            animations(btn4);
+                        }
+                    }, 4*delay1s);
+
                     break;
                 case 5:
-                    animations(btn5);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            animations(btn5);
+                        }
+                    }, 4*delay1s);
+
                     break;
                 default:
-                    /*Case for 6*/
-                    animations(btn6);
+                            /*Case for 6*/
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            animations(btn6);
+                        }
+                    }, 4*delay1s);
+
             }
         }
-
     }
     public void sequence(){
         Random r = new Random();
         int selector = r.nextInt(6)+1;  // Entre 0 y 5, más 1, osea entre 1 y 6.
-        /* switch para cada boton
-        switch(selector)
-        {
-            case 1:
-                animations(btn1);
-                break;
-            case 2:
-                animations(btn2);
-                break;
-            case 3:
-                animations(btn3);
-                break;
-            case 4:
-                animations(btn4);
-                break;
-            case 5:
-                animations(btn5);
-                break;
-            default:
-                //Case for 6
-                animations(btn6);
-        }*/
         sequence = "" + sequence + (char) selector;   // concat the sequence values
         counter++;
     }
 
-    public void secuenciaOK(){  // sequence completed ok
+    public void sequenceOK(){  // sequence completed ok
         Selected = "";
         Points = Points + 1;
-        Random rnd = new Random();
-        int selector = rnd.nextInt(6)+1;  // Entre 0 y 5, más 1, entre 1 y 6.
-        sequence = "" + sequence + (char) selector;   // concat the sequence values
-        counter++;
-        PlayActualSequence();
-
-
+        pts.setText(Points);
+        Toast toast = Toast.makeText(getApplicationContext(), "Secuencia Correcta!!", Toast.LENGTH_LONG);
+        toast.show();
     }
 
-    /*public void Ingame(){
-        if (gameover){
-            // go to top scores activities
-            closeContextMenu();
-        }
-        else{
-            while(!gameover){
-                enableButtons();
-                /*for (int j = 0; j <= Selected.length(); j++){
-                   if (sequence.charAt(j)!=Selected.charAt(j)){ //implementing sequence check
-                       gameover = true;
-                   }
-                   else {
-                        if (j == counter) {
-                            secuenciaOK();
-                        }
-                   }
+
+
+
+    public void Ingame(){
+      //  secuencia:
+            PlayActualSequence();
+            enableButtons();
+
+                if (gameover){
+                    Intent i = new Intent(this, gameover_Topscores.class);
+                    startActivity(i);
+                    finish();
                 }
-
-            }
-
-            if (gameover){
-                // go to top scores activities
-                closeContextMenu();
-            }
-
-        }
-
-
-
-
-    }*/
+    }
 
 
 
